@@ -1,7 +1,7 @@
 # 仪表自动编号插件
 
 > 基于 AutoCAD COM 的仪表块自动编号工具  
-> 版本 **1.0.0** | [更新日志](CHANGELOG.md) | [用户手册](USAGE.md)
+> 版本 **1.0.0** | [更新日志](CHANGELOG.md) | [用户手册](USAGE.md) | [GitHub](https://github.com/Qury123/Cad-PID-Instrument-Numbering)
 
 ---
 
