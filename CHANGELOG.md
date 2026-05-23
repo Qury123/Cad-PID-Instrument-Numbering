@@ -7,6 +7,15 @@
 
 ## 2026-05-23
 
+### 12:27 — 项目目录结构整理
+- 问题：根目录杂乱，备份、脚本、EXE 混在一起
+- 处理：
+  - `scripts/` — 构建和运行脚本（`build.bat`、`git_here.bat`）
+  - `config/` — 打包配置（`version_info.txt`）
+  - `releases/v1.0.0/` — 按版本归档 EXE
+  - `archive/` — 旧备份文件（历史 LSP、旧版 Python 源码）
+  - 根目录保持干净：只留 `src/`、`VERSION`、`pyproject.toml`、`README.md`、`CHANGELOG.md`、`requirements.txt`、`.gitignore`、`run.py`、`run.bat`
+
 ### 12:01 — 打包发布 v1.0.0 正式版 EXE
 - 问题：项目只有 Python 源码，用户无法直接双击运行（需装 Python 和依赖）
 - 处理：用 PyInstaller 打包为单文件 EXE（28.8 MB），嵌入版本信息

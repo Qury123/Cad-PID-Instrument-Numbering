@@ -5,6 +5,12 @@ __pycache__/
 dist/
 build/
 
+# 发布 EXE（体积大，不追踪）
+releases/
+
+# 归档缓存
+archive/
+
 # 日志
 plugin.log
 
