@@ -5,11 +5,12 @@ __pycache__/
 dist/
 build/
 
-# 发布 EXE（体积大，不追踪）
-releases/
 
 # 归档缓存
 archive/
+
+# Reasonix 技能文件（与项目无关）
+skills/
 
 # 日志
 plugin.log

@@ -82,6 +82,10 @@ REM ── 归档到 releases 目录 ──
 if not exist "releases\v%VERSION%" mkdir "releases\v%VERSION%"
 copy /y "dist\仪表自动编号.exe" "releases\v%VERSION%\仪表自动编号_v%VERSION%.exe" >nul
 copy /y "dist\仪表自动编号.exe" "仪表自动编号_v%VERSION%.exe" >nul
+if exist "..\.git" (
+    "C:\Program Files\Git\cmd\git.exe" add "releases\v%VERSION%\仪表自动编号_v%VERSION%.exe" >nul 2>&1
+    echo 📌 已暂存到 Git，别忘了 commit
+)
 echo 📋 已归档: releases\v%VERSION%\仪表自动编号_v%VERSION%.exe
 
 echo.
