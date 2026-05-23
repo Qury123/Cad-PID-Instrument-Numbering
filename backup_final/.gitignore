@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# 配置记忆文件（自动生成）
+config.json
+
+# IDE
+.vscode/
+.idea/
+
+# 版本临时文件
+*.bak
+*.swp
