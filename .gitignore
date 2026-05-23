@@ -5,6 +5,9 @@ __pycache__/
 dist/
 build/
 
+# 日志
+plugin.log
+
 # 配置记忆文件（自动生成）
 config.json
 
