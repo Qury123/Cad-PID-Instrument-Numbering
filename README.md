@@ -1,70 +1,77 @@
-# 仪表自动编号插件 - AutoCAD Python 插件
+# 仪表自动编号插件
 
-## 概述
+> 基于 AutoCAD COM 的仪表块自动编号工具  
+> 版本 **1.0.0** | [更新日志](CHANGELOG.md) | [用户手册](USAGE.md)
 
-对选中的 AutoCAD 仪表块自动编号，**不同类型仪表相互独立编号**。
-例如：PT 类型仪表编为 PT-001, PT-002… TE 类型编为 TE-001, TE-002…
+---
 
-## 功能特性
-
-- ✅ 可视化对话框操作（tkinter），告别命令行
-- ✅ 框选区域后自动识别所有属性标签
-- ✅ 用户选择「仪表类型」标签和「编号」标签
-- ✅ 多选需要编号的仪表类型（复选框）
-- ✅ 可配置编号样式：前缀、起始号、补零位数
-- ✅ 不同类型仪表各自独立编号
-- ✅ 行优先排序（Y 容差可调）
-- ✅ 记忆上次配置，下次自动加载
-
-## 环境要求
-
-- **操作系统**：Windows（AutoCAD 仅支持 Windows）
-- **AutoCAD**：2014 或更高版本（正在运行）
-- **Python**：3.8 或更高版本
-
-## 安装
+## 快速开始
 
 ```bash
+# 方式一：直接双击 EXE
+releases\v1.0.0\仪表自动编号_v1.0.0.exe
+
+# 方式二：Python 源码
 pip install -r requirements.txt
+python run.py
 ```
 
-## 使用方法
+详细操作见 **[用户操作手册 →](USAGE.md)**
 
-1. 打开 AutoCAD 和含仪表属性块的图纸
-2. 在终端运行：
-   ```bash
-   python run.py
-   ```
-3. 按对话框引导操作
+---
+
+## 功能概要
+
+| 功能 | 说明 |
+|------|------|
+| 框选块 | 在 AutoCAD 中框选，自动过滤带属性块 |
+| 读取当前选择 | 先手动在 CAD 选中，插件直接读取 |
+| 标签识别 | 自动列出所有属性标签，选择类型和编号字段 |
+| 类型过滤 | 按字母序排列，复选框多选 |
+| 自动顺延 | 从已有编号最大值+1 开始 |
+| 行优先排序 | Y 容差同行，按 X 从左到右 |
+| 配置记忆 | 上次的选择和参数自动保存 |
 
 ## 项目结构
 
 ```
-├── run.py                  # 启动入口
-├── requirements.txt        # 依赖清单
-├── README.md               # 本文件
-├── .gitignore
-├── src/
-│   ├── acad_com.py         # AutoCAD COM 连接层
-│   ├── block_analyzer.py   # 块属性分析器
-│   ├── config.py           # 配置持久化
-│   ├── numbering.py        # 编号逻辑 + 排序
+├── src/                       # 源代码
+│   ├── acad_com.py            # AutoCAD COM 连接层
+│   ├── block_analyzer.py      # 块属性分析器
+│   ├── numbering.py           # 编号逻辑 + 行优先排序
+│   ├── config.py              # 配置持久化
+│   ├── version.py             # 版本号读取
 │   └── ui/
-│       ├── tag_selector.py    # 标签选择对话框
-│       ├── code_selector.py   # 代号多选对话框
-│       └── number_config.py   # 编号配置对话框
-└── skills/
-    └── SKILL.md            # 开发技能文件
+│       └── main_window.py     # 主窗口（5 步向导）
+├── scripts/
+│   ├── build.bat              # 一键打包 EXE
+│   └── git_here.bat           # Git 快捷命令
+├── config/
+│   └── version_info.txt       # EXE 版本属性
+├── releases/                  # 发布 EXE（按版本归档）
+├── VERSION                    # 版本号
+├── pyproject.toml             # 项目元数据
+├── CHANGELOG.md               # 更新日志
+├── USAGE.md                   # 用户操作手册
+└── README.md                  # 本文件
 ```
 
-## 参考
+## 环境要求
 
-本插件逻辑参考了 LSP 版本 `自动仪表编号V5.0.3.lsp`，但在以下方面做了改进：
+| 项目 | 要求 |
+|------|------|
+| 操作系统 | Windows 10 / 11 |
+| AutoCAD | 2014+（必须正在运行） |
+| Python | 3.8+（仅源码方式需要） |
 
-| 方面 | LSP 版本 | Python 版本 |
-|------|----------|-------------|
-| 界面 | 纯命令行 | 可视化对话框 |
-| 编号方式 | 所有类型混排 | 每种类型独立编号 |
-| 类型选择 | 输入序号逗号分隔 | 复选框多选 |
-| 配置存储 | 自定义 INI 解析 | 标准 JSON |
-| 错误处理 | quit 崩溃 | try/except 优雅处理 |
+## 构建
+
+```bash
+scripts\build.bat
+```
+
+输出归档到 `releases\vX.X.X\`。
+
+## 许可
+
+MIT License
