@@ -7,6 +7,13 @@
 
 ## 2026-05-23
 
+### 12:01 — 打包发布 v1.0.0 正式版 EXE
+- 问题：项目只有 Python 源码，用户无法直接双击运行（需装 Python 和依赖）
+- 处理：用 PyInstaller 打包为单文件 EXE（28.8 MB），嵌入版本信息
+- 新增文件：`pyproject.toml`（PEP 621 元数据）、`VERSION`（版本号）、`src/version.py`（版本读取）、`version_info.txt`（EXE 属性）、`build.bat`（一键构建）
+- 输出：`dist\仪表自动编号.exe` + `仪表自动编号_v1.0.0.exe`
+- 版本方案：语义化 `MAJOR.MINOR.PATCH`，VERSION 文件管理，窗口标题自动读取
+
 ### ~11:55 — 初始化 Git 仓库 + 新建 CHANGELOG.md
 - 问题：之前所有修改无版本记录，无法回退
 - 处理：`git init`，`git_here.bat` 快捷命令；创建本文件；`.gitignore` 补充 `plugin.log`

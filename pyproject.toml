@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "cad-instrument-numbering"
+version = "1.0.0"
+description = "仪表自动编号插件 — 基于 AutoCAD COM 的块属性编号工具"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "User", email = "user@localhost"},
+]
+keywords = ["autocad", "com", "numbering", "instrument"]
+
+dependencies = [
+    "pyautocad>=1.0.0",
+    "pywin32>=306",
+]
+
+[project.urls]
+Homepage = "https://github.com/user/cad-instrument-numbering"
+
+[tool.setuptools.packages.find]
+include = ["src*"]
+
+[tool.pyinstaller]
+console = false
+onefile = true
+name = "仪表自动编号"
+icon = "app.ico"
+version-file = "version_info.txt"

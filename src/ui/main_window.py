@@ -19,6 +19,7 @@ from src.acad_com import AcadConnect, AcadConnectError
 from src.block_analyzer import BlockAnalyzer
 from src.numbering import NumberingEngine
 from src.config import ConfigManager
+from src.version import get_version
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ class MainWindow:
         write_log("插件启动")
         try:
             self.root = tk.Tk()
-            self.root.title("仪表自动编号插件 v1.0")
+            self.root.title(f"仪表自动编号插件 v{get_version()}")
             self.root.geometry("680x580")
             self.root.minsize(600, 520)
             # 关闭按钮可点击
