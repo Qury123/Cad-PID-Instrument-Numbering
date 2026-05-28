@@ -35,7 +35,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "start_number": 1,
         "pad_width": 3,
         "y_tolerance": 50.0,
-        "auto_continue": True,
+        "auto_continue": False,
     },
 }
 

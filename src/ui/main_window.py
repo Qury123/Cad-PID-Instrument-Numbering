@@ -683,7 +683,7 @@ class MainWindow:
             self._cfg_entries[key] = e
 
         off = len(fields) + 1  # 表单占用了 row 1~4，后续从 row 5 开始
-        self._auto_var = tk.BooleanVar(value=lc.get("auto_continue", True))
+        self._auto_var = tk.BooleanVar(value=lc.get("auto_continue", False))
         self._auto_var.trace_add("write", lambda *_: self._toggle_auto())
         tk.Checkbutton(f, text="自动顺延：从现有编号最大值+1开始",
                        variable=self._auto_var, font=("微软雅黑", 9)
