@@ -241,6 +241,10 @@ class NumberingEngine:
     ) -> int:
         """为排序后的块写入编号
 
+        全部块重新编号（覆盖已有编号）。
+        同号的连续块视为一组，共享同一个编号。
+        空号块每个单独分配。
+
         Args:
             blocks: 排序后的块列表
             number_tag: 编号标签名
@@ -252,29 +256,56 @@ class NumberingEngine:
         Returns:
             成功编号的块数
         """
-        count = 0
-        total = len(blocks)
-        for i, blk in enumerate(blocks):
-            num = start_num + i
+        # ── 第一步：按连续同号分组 ──
+        groups: List[List[Any]] = []  # 每个 group 是一组连续同号的块
+        current: List[Any] = []
+        current_val = None
 
-            # 格式化编号
-            num_str = str(num)
-            if pad_width > 0:
-                num_str = num_str.zfill(pad_width)
-            full_tag = f"{prefix}{num_str}"
-
-            # 获取属性实体并写入
-            attr_ent = AcadConnect.get_attribute_entity(blk, number_tag)
-            if attr_ent is not None:
-                AcadConnect.set_attribute_value(attr_ent, full_tag)
-                blk.Update()  # 刷新块参照（关键！否则CAD不显示变更）
-                count += 1
-                logger.debug("写入编号 %s", full_tag)
-                # 每 20 块保持窗口响应
-                if progress_cb and count % 20 == 0:
-                    progress_cb()
+        for blk in blocks:
+            val = AcadConnect.get_attribute_value(blk, number_tag)
+            v = (val or "").strip()
+            if not current:
+                current = [blk]
+                current_val = v
+            elif v == current_val:
+                current.append(blk)
             else:
-                logger.warning("块 %s 没有标签 %s，跳过", blk.EntityName, number_tag)
+                groups.append(current)
+                current = [blk]
+                current_val = v
+        if current:
+            groups.append(current)
+
+        # ── 第二步：每组分配一个编号 ──
+        count = 0
+        for group in groups:
+            # 空号组：有几个块就占几个编号
+            first_val = (AcadConnect.get_attribute_value(group[0], number_tag) or "").strip()
+            if not first_val:
+                for blk in group:
+                    num = start_num + count
+                    num_str = str(num).zfill(pad_width) if pad_width > 0 else str(num)
+                    full_tag = f"{prefix}{num_str}"
+                    attr_ent = AcadConnect.get_attribute_entity(blk, number_tag)
+                    if attr_ent is not None:
+                        AcadConnect.set_attribute_value(attr_ent, full_tag)
+                        blk.Update()
+                        count += 1
+                        if progress_cb and count % 20 == 0:
+                            progress_cb()
+            else:
+                # 有号组：整组共享一个编号
+                num = start_num + count
+                num_str = str(num).zfill(pad_width) if pad_width > 0 else str(num)
+                full_tag = f"{prefix}{num_str}"
+                for blk in group:
+                    attr_ent = AcadConnect.get_attribute_entity(blk, number_tag)
+                    if attr_ent is not None:
+                        AcadConnect.set_attribute_value(attr_ent, full_tag)
+                        blk.Update()
+                count += 1
+                if progress_cb:
+                    progress_cb()
 
         return count
 
