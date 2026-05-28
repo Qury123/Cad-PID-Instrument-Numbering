@@ -204,7 +204,7 @@ class MainWindow:
             self._next_btn.config(text="✅ 完成", command=self.root.destroy,
                                   state=tk.NORMAL)
         elif self._current_step >= self._total_steps - 1:
-            self._next_btn.config(text="🚀 开始编号", command=self._execute_numbering)
+            self._next_btn.config(text="🚀 自动编号", command=self._execute_numbering)
         else:
             self._next_btn.config(text="下一步 →", command=self._go_next,
                                   state=tk.NORMAL)
@@ -766,7 +766,7 @@ class MainWindow:
     def _step4_execute(self) -> None:
         f = self._step_frames[self._current_step]
 
-        tk.Label(f, text="最终确认后点击「开始编号」",
+        tk.Label(f, text="先预览编号确认无误，再执行自动编号写入CAD",
                  font=("微软雅黑", 9), fg="#555").pack(anchor=tk.W, pady=(0, 10))
 
         to_number = sum(self.type_counts.get(t, 0) for t in self.selected_types)
@@ -788,8 +788,79 @@ class MainWindow:
             tk.Label(info_frame, text=line, font=("微软雅黑", 9), anchor=tk.W,
                      fg="#333").pack(fill=tk.X, padx=5, pady=2)
 
+        # ── 预览区域 ──
+        sep = ttk.Separator(f, orient=tk.HORIZONTAL)
+        sep.pack(fill=tk.X, pady=(10, 5))
+
+        preview_header = ttk.Frame(f)
+        preview_header.pack(fill=tk.X)
+        ttk.Label(preview_header, text="编号预览（仅位号）：",
+                  font=("微软雅黑", 9, "bold")).pack(side=tk.LEFT)
+        self._preview_btn = ttk.Button(preview_header, text="🔍 预览编号",
+                                       command=self._preview_only, width=14)
+        self._preview_btn.pack(side=tk.RIGHT)
+
+        pf = ttk.Frame(f)
+        pf.pack(fill=tk.BOTH, expand=True, pady=(5, 0))
+        pf.grid_rowconfigure(0, weight=1)
+        pf.grid_columnconfigure(0, weight=1)
+
+        self._preview_text = tk.Text(pf, height=12, font=("Consolas", 9),
+                                     wrap=tk.NONE, state=tk.DISABLED,
+                                     bg="#fafafa", relief=tk.SUNKEN, borderwidth=1)
+        preview_sb = ttk.Scrollbar(pf, orient=tk.VERTICAL,
+                                   command=self._preview_text.yview)
+        self._preview_text.configure(yscrollcommand=preview_sb.set)
+        self._preview_text.grid(row=0, column=0, sticky="nsew")
+        preview_sb.grid(row=0, column=1, sticky="ns")
+        # 初始提示
+        self._preview_text.configure(state=tk.NORMAL)
+        self._preview_text.insert(tk.END, "点击「🔍 预览编号」查看本次编号结果\n")
+        self._preview_text.configure(state=tk.DISABLED)
+
         self._exec_label = tk.Label(f, text="", font=("微软雅黑", 10))
-        self._exec_label.pack(anchor=tk.W, pady=(15, 0))
+        self._exec_label.pack(anchor=tk.W, pady=(10, 0))
+
+    def _preview_only(self) -> None:
+        """预览编号（不写入CAD）"""
+        if not all([self.acad, self.blocks, self.type_tag, self.number_tag,
+                    self.selected_types, self.number_config]):
+            mb.showwarning("提示", "请先完成前面的所有步骤。")
+            return
+
+        self._set_busy(True, "计算中...")
+        self.log("正在计算编号预览...")
+        self.root.update()
+
+        try:
+            engine = NumberingEngine(self.acad)
+            self._preview_data = engine.preview_numbering(
+                block_refs=self.blocks, type_tag=self.type_tag,
+                number_tag=self.number_tag, selected_types=self.selected_types,
+                config=self.number_config)
+
+            # 填入预览文本框
+            self._preview_text.configure(state=tk.NORMAL)
+            self._preview_text.delete(1.0, tk.END)
+            count = 0
+            for t in sorted(self._preview_data.keys()):
+                entries = self._preview_data[t]
+                for blk, tag in entries:
+                    count += 1
+                    self._preview_text.insert(tk.END, f"{tag}\n")
+            self._preview_text.configure(state=tk.DISABLED)
+
+            total = sum(len(v) for v in self._preview_data.values())
+            self.log(f"预览完成：共 {total} 个块将编号", "SUCCESS")
+            self._exec_label.config(
+                text=f"✅ 预览完成，共 {total} 个位号，确认无误后点击「自动编号」", fg="#2a7")
+            self._set_busy(False)
+
+        except Exception as e:
+            self.log(f"预览失败: {e}", "ERROR")
+            self.log(traceback.format_exc(), "ERROR")
+            self._exec_label.config(text=f"❌ 预览失败: {e}", fg="red")
+            self._set_busy(False, success=False)
 
     def _execute_numbering(self) -> None:
         if not all([self.acad, self.blocks, self.type_tag, self.number_tag,
@@ -799,19 +870,10 @@ class MainWindow:
 
         self._set_busy(True, "编号中...")
         self.log("=" * 40)
-        self.log("开始执行编号...")
+        self.log("开始写入编号...")
 
         try:
             engine = NumberingEngine(self.acad)
-            self.log("正在生成编号...")
-            self.root.update()
-            preview = engine.preview_numbering(
-                block_refs=self.blocks, type_tag=self.type_tag,
-                number_tag=self.number_tag, selected_types=self.selected_types,
-                config=self.number_config)
-            for t, entries in preview.items():
-                self.log(f"  {t}: {len(entries)} 个块 → {entries[0][1] if entries else '无'}...")
-
             self.log("正在写入 AutoCAD...")
             self.root.update()
             results = engine.number_instruments(
