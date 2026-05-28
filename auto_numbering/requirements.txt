@@ -1,4 +1,0 @@
-pyautocad>=0.2.0
-pywin32>=305
-# 构建依赖（打包 EXE 用）
-# pyinstaller>=6.0

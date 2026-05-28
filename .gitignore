@@ -9,7 +9,9 @@ build/
 # 归档缓存
 archive/
 
-# Reasonix 技能文件（与项目无关）
+# 其他独立项目目录
+auto_numbering/
+batch_attr_color/
 skills/
 
 # 日志
