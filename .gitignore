@@ -10,7 +10,6 @@ build/
 archive/
 
 # 其他独立项目目录
-auto_numbering/
 batch_attr_color/
 skills/
 
@@ -19,6 +18,9 @@ plugin.log
 
 # 配置记忆文件（自动生成）
 config.json
+
+# Reasonix
+.reasonix/
 
 # IDE
 .vscode/

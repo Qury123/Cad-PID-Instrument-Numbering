@@ -1,59 +1,51 @@
-# 仪表自动编号插件
+# CAD 插件工具集
 
-> 基于 AutoCAD COM 的仪表块自动编号工具  
-> 版本 **1.0.0** | [更新日志](CHANGELOG.md) | [用户手册](USAGE.md) | [GitHub](https://github.com/Qury123/Cad-PID-Instrument-Numbering)
+> AutoCAD 辅助工具集合，基于 COM 自动化。
 
 ---
 
-## 快速开始
+## 插件列表
+
+| 插件 | 目录 | 说明 |
+|------|------|------|
+| 🔢 **仪表自动编号** | [`auto_numbering/`](auto_numbering/) | 框选仪表块，自动按行优先顺序编号，支持手动调序、同位置合并 |
+| 🎨 **批量修改块属性文字颜色** | [`batch_attr_color/`](batch_attr_color/) | 框选块 → 选属性标签 → 选颜色 → 批量修改文字颜色 |
+
+---
+
+## 快速使用
 
 ```bash
-# 方式一：直接双击 EXE
-releases\v1.0.0\仪表自动编号_v1.0.0.exe
+# 仪表自动编号
+cd auto_numbering
+python run.py
 
-# 方式二：Python 源码
-pip install -r requirements.txt
+# 批量改色
+cd batch_attr_color
 python run.py
 ```
 
-详细操作见 **[用户操作手册 →](USAGE.md)**
+每个插件目录下均有独立的 `README.md`、`USAGE.md` 和 `CHANGELOG.md`。
 
 ---
 
-## 功能概要
-
-| 功能 | 说明 |
-|------|------|
-| 框选块 | 在 AutoCAD 中框选，自动过滤带属性块 |
-| 读取当前选择 | 先手动在 CAD 选中，插件直接读取 |
-| 标签识别 | 自动列出所有属性标签，选择类型和编号字段 |
-| 类型过滤 | 按字母序排列，复选框多选 |
-| 自动顺延 | 从已有编号最大值+1 开始 |
-| 行优先排序 | Y 容差同行，按 X 从左到右 |
-| 配置记忆 | 上次的选择和参数自动保存 |
-
-## 项目结构
+## 目录结构
 
 ```
-├── src/                       # 源代码
-│   ├── acad_com.py            # AutoCAD COM 连接层
-│   ├── block_analyzer.py      # 块属性分析器
-│   ├── numbering.py           # 编号逻辑 + 行优先排序
-│   ├── config.py              # 配置持久化
-│   ├── version.py             # 版本号读取
-│   └── ui/
-│       └── main_window.py     # 主窗口（5 步向导）
-├── scripts/
-│   ├── build.bat              # 一键打包 EXE
-│   └── git_here.bat           # Git 快捷命令
-├── config/
-│   └── version_info.txt       # EXE 版本属性
-├── releases/                  # 发布 EXE（按版本归档）
-├── VERSION                    # 版本号
-├── pyproject.toml             # 项目元数据
-├── CHANGELOG.md               # 更新日志
-├── USAGE.md                   # 用户操作手册
-└── README.md                  # 本文件
+├── auto_numbering/           # 仪表自动编号插件
+│   ├── src/                  # 源代码
+│   ├── scripts/              # 构建脚本
+│   ├── releases/             # 已编译 EXE（按版本）
+│   ├── USAGE.md              # 用户操作手册
+│   └── CHANGELOG.md          # 更新日志
+├── batch_attr_color/         # 批量改色插件
+│   ├── src/
+│   └── ...
+├── archive/                  # 历史版本归档（LSP → Python 迁移备份）
+│   ├── lsp_original/         # 原始 AutoLISP 版本
+│   ├── step2/ / step3/       # Python 迁移中间版
+│   └── backup_final/         # 最终完整备份
+└── skills/                   # Reasonix 技能文件（工具用，可忽略）
 ```
 
 ## 环境要求
@@ -62,15 +54,9 @@ python run.py
 |------|------|
 | 操作系统 | Windows 10 / 11 |
 | AutoCAD | 2014+（必须正在运行） |
-| Python | 3.8+（仅源码方式需要） |
+| Python | 3.8+ |
 
-## 构建
-
-```bash
-scripts\build.bat
-```
-
-输出归档到 `releases\vX.X.X\`。
+> 每个插件子目录有独立的 `requirements.txt`。
 
 ## 许可
 
